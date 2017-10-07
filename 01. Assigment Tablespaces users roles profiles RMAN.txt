@@ -1,0 +1,2 @@
+-- 1. Design the database to handle the below (Entity diagram relationship (Add image of diagram to git))(2.0)
+-- Ver imagen 01. DiagramGofarTravel_Oracle en el repositorio

@@ -30,3 +30,26 @@ QUOTA UNLIMITED ON gofar_travel;
 GRANT DBA TO BDA;
 GRANT CONNECT TO BDA;
 
+--6. Create 3 profiles. (0.2)
+--a. Profile 1: "manager " password life 40 days, one session per user, 15 minutes idle, 4 failed login attempts
+CREATE PROFILE manager LIMIT 
+  SESSIONS_PER_USER                 1   --
+  IDLE_TIME                        15   -- minutos 
+  FAILED_LOGIN_ATTEMPTS             4   --
+  PASSWORD_LIFE_TIME               40;  -- dias
+
+--b. Profile 2: "finance " password life 15 days, one session per user, 3 minutes idle, 2 failed login attempts
+CREATE PROFILE finance LIMIT 
+  SESSIONS_PER_USER                 1   --
+  IDLE_TIME                         3   -- minutos 
+  FAILED_LOGIN_ATTEMPTS             2   --
+  PASSWORD_LIFE_TIME               15;  -- dias
+
+--c. Profile 3: "development " password life 100 days, two session per user, 30 minutes idle, no failed login attempts
+CREATE PROFILE development LIMIT 
+  SESSIONS_PER_USER                  2   --
+  IDLE_TIME                         30   -- minutos
+  PASSWORD_LIFE_TIME               100;  -- dias
+
+
+

@@ -26,3 +26,7 @@ IDENTIFIED BY bda
 DEFAULT TABLESPACE gofar_travel
 QUOTA UNLIMITED ON gofar_travel;
 
+ --5. Assign the dba role and permissions to connect to the user just created (0.2)
+GRANT DBA TO BDA;
+GRANT CONNECT TO BDA;
+

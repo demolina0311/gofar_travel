@@ -18,3 +18,11 @@ CREATE UNDO TABLESPACE undo_test DATAFILE
 
 ---3. Set the undo tablespace to be used in the system (0.2)
 ALTER SYSTEM SET UNDO_TABLESPACE = undo_test;
+
+--4. Create a DBA user and assign it to the tablespace called "gofar_travel", this user has unlimited space
+--on the tablespace (0.2)- Se crea BDA ya que el nombre DBA lo tiene asignado un rol 
+CREATE USER BDA
+IDENTIFIED BY bda
+DEFAULT TABLESPACE gofar_travel
+QUOTA UNLIMITED ON gofar_travel;
+

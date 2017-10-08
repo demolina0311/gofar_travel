@@ -51,5 +51,37 @@ CREATE PROFILE development LIMIT
   IDLE_TIME                         30   -- minutos
   PASSWORD_LIFE_TIME               100;  -- dias
 
+-- 7. Create 4 users, assign them the tablespace "gofar_travel"; profiles created should be used for the
+--users, all the users should be allow to connect to the database. (0.2)
+CREATE USER User1
+IDENTIFIED BY user1
+DEFAULT TABLESPACE gofar_travel
+QUOTA UNLIMITED ON gofar_travel
+PROFILE development;
+
+CREATE USER User2
+IDENTIFIED BY user2
+DEFAULT TABLESPACE gofar_travel
+QUOTA UNLIMITED ON gofar_travel
+PROFILE development;
+
+CREATE USER User3
+IDENTIFIED BY user3
+DEFAULT TABLESPACE gofar_travel
+QUOTA UNLIMITED ON gofar_travel
+PROFILE manager;
+
+CREATE USER User4
+IDENTIFIED BY user4
+DEFAULT TABLESPACE gofar_travel
+QUOTA UNLIMITED ON gofar_travel
+PROFILE finance;
+
+GRANT CONNECT TO User1;
+GRANT CONNECT TO User2;
+GRANT CONNECT TO User3;
+GRANT CONNECT TO User4;
+
+
 
 

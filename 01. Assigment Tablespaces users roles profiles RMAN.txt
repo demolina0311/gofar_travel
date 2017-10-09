@@ -87,3 +87,6 @@ GRANT CONNECT TO User4;
 ALTER USER User3 ACCOUNT LOCK;
 ALTER USER User4 ACCOUNT LOCK;
 
+-- 9. Delete the tablespace called "test_purposes" (0.2)
+DROP TABLESPACE test_purposes INCLUDING CONTENTS AND DATAFILES;
+

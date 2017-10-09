@@ -83,5 +83,7 @@ GRANT CONNECT TO User3;
 GRANT CONNECT TO User4;
 
 
-
+-- 8. Lock the users associate with profiles: manager and finance . (0.2)
+ALTER USER User3 ACCOUNT LOCK;
+ALTER USER User4 ACCOUNT LOCK;
 

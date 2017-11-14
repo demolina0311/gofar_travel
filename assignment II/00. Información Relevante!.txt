@@ -1,0 +1,8 @@
+
+======================== assignment II ========================
+Se crea nuevamente la base de datos, se utiliza el usuario BDA no DBA ya que dice que existe conflicto con un ROL.
+Se modifican algunas tablas para poder realizar el taller.
+
+Para dar solución al punto 1 del historico de vehiculos se crea una vista llamada HISTORICAL_DATA_FOR_VEHICLES.
+
+Se crea el CONSTREINT a la columna TYPE de la tabla VEHICLES para que solo permita los valores NEW, TRADE y SOLD.

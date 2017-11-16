@@ -28,3 +28,110 @@ AS
 SELECT ID, DESCRIPTION FROM ITEMS WHERE units_available < 5;
 
 SELECT * FROM UNDER_FIVE_UNITS_AVAILABLES;
+
+
+
+--Punto 4. 
+--Create a trigger which decreases the number of units available after the 
+--product has been associated to one bill.(0.5)
+
+CREATE OR REPLACE TRIGGER DECREASE_UNITS_FROM_ITEMS_AFTER_CREATE_INVOICE_DETAIL
+  AFTER INSERT 
+  ON INVOICES_DETAIL
+DECLARE
+BEGIN
+  
+  UPDATE ITEMS 
+  SET UNITS_AVAILABLE = (UNITS_AVAILABLE - (SELECT QUANTITY 
+              FROM invoices_detail 
+              WHERE ID = (SELECT MAX(ID) FROM invoices_detail)))
+  WHERE ID = (SELECT  ITEM_ID
+              FROM invoices_detail 
+              WHERE ID = (SELECT MAX(ID) FROM invoices_detail));
+END;
+
+--Test for exec de trigger.
+DECLARE
+  invoices_id number;
+  invoices_detail_id number;
+BEGIN
+  ------------------------
+  --Insert a new invoices.
+  ------------------------
+  
+  --Get the last ID + 1 from invoices.
+  select (max(ID) + 1) into invoices_id from invoices;
+  
+  --Insert the new invoice with the new ID.
+  INSERT INTO invoices (id, DATE_INVOICE, STATE_INVOICE, customer_id, vehicle_id, 
+    seller_id, cost_vehicle, cost_exchanged, cost_items, tax, fee, 
+    cost_without_vat, net_cost) 
+  VALUES (invoices_id, '15112017', 'Pending', 5, 41, 9, 
+    56917, NULL, 50774, 6609, 360, NULL, NULL);
+
+  -------------------------------
+  --Insert a new invoices detail.
+  -------------------------------
+  
+  --Get the last ID from invoices.
+  select (max(ID)) into invoices_id from invoices;
+  
+  --Get the last ID + 1 from invoices detail.
+  select (max(ID) + 1) into invoices_detail_id from invoices_detail;
+  
+  --Insert the invoices detail.
+  INSERT INTO invoices_detail (id, invoice_id, item_id, QUANTITY, cost_items) 
+  VALUES (invoices_detail_id, invoices_id, 1, 1, '6677');
+  
+  --Get the last ID + 2 from invoices detail.
+  select (max(ID) + 2) into invoices_detail_id from invoices_detail;
+  --Insert the invoices detail.
+  INSERT INTO invoices_detail (id, invoice_id, item_id, QUANTITY, cost_items) 
+  VALUES (invoices_detail_id, invoices_id, 3, 1, '6677');
+  
+  --Get the last ID + 3 from invoices detail.
+  select (max(ID) + 3) into invoices_detail_id from invoices_detail;
+  --Insert the invoices detail.
+  INSERT INTO invoices_detail (id, invoice_id, item_id, QUANTITY, cost_items) 
+  VALUES (invoices_detail_id, invoices_id, 5, 1, '6677');
+  
+END;
+
+
+--Punto 5. 
+--Create a procedure called "reorder_units", inside the procedure you should call the view created in the
+--step #3, for each element returned, the value of "units_available" should be increased in 20 units by
+--default. (0.5)
+CREATE OR REPLACE PROCEDURE reorder_units 
+IS
+  CURSOR XXX IS
+    SELECT * FROM UNDER_FIVE_UNITS_AVAILABLES;
+    
+  ITEMS_ID NUMBER := -1;
+  ITEM_DESCRIPTION VARCHAR(255);
+  
+BEGIN
+  OPEN XXX;
+  
+    FETCH XXX INTO ITEMS_ID, ITEM_DESCRIPTION;
+    
+    IF (ITEMS_ID = -1) THEN
+      DBMS_OUTPUT.PUT_LINE('NO SE OBTIENEN FILAS PARA LEER. VERIFIQUE QUE LAS'||
+        ' UNIDADES DISPONIBLES EN LA TABLA "ITMES" SEA MENOR QUE 5.');
+    END IF;
+    
+    WHILE XXX %FOUND LOOP
+      
+      UPDATE ITEMS
+      SET UNITS_AVAILABLE = (UNITS_AVAILABLE + 20)
+      WHERE ID = ITEMS_ID;
+      
+      FETCH XXX INTO ITEMS_ID, ITEM_DESCRIPTION;
+      
+    END LOOP;
+    
+  CLOSE XXX;
+END;
+
+EXEC reorder_units();
+

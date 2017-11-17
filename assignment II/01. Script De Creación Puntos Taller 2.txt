@@ -178,4 +178,175 @@ CREATE OR REPLACE VIEW bill_and_details AS
   select * from bill_and_details;
 
 
+--Punto 7.
+--Create the explain plan for the last step (add a screenshot or copy and 
+--paste the information returned)(0.5).
+EXPLAIN PLAN SET STATEMENT_ID = 'bill_and_details_explain_plan' FOR 
+  SELECT DISTINCT 
+        INVOICES.ID as "Invoice Id",  
+  
+         SELLERS.ID as "Seller Id", 
+         SELLERS.FIRST_NAME as "Seller first name", 
+         SELLERS.LAST_NAME as "Seller last name",
+         
+         CUSTOMERS.ID as "customer id", 
+         CUSTOMERS.IDENTIFICATION as "Customer identification", 
+         CUSTOMERS.FIRST_NAME as "Customer first name", 
+         CUSTOMERS.LAST_NAME as "Customer last name",
+         
+         VEHICLES.ID as "Vehicle id",
+         VEHICLES.NAME as "Vehicle name",
+         
+         MANUFACTURERS.NAME_MANUFACTURER as "Vehicle manufacturer",
+         
+         ITEMS.ID as "Accesory id", 
+         ITEMS.DESCRIPTION as "Accesori name" 
+         
+  FROM INVOICES 
+  INNER JOIN SELLERS ON INVOICES.SELLER_ID = SELLERS.ID 
+  INNER JOIN CUSTOMERS ON INVOICES.CUSTOMER_ID = CUSTOMERS.ID 
+  INNER JOIN VEHICLES ON INVOICES.VEHICLE_ID = VEHICLES.ID 
+  --INNER JOIN EXCHANGED_VEHICLES ON EXCHANGED_VEHICLES.INVOICE_ID = INVOICES.ID 
+  INNER JOIN MANUFACTURERS ON VEHICLES.MANUFACTURER_ID = MANUFACTURERS.ID 
+  INNER JOIN INVOICES_DETAIL ON INVOICES_DETAIL.INVOICE_ID = INVOICES.ID 
+  INNER JOIN ITEMS ON ITEM_ID = ITEMS.ID 
+  WHERE INVOICES.ID = 5 
+  ORDER BY INVOICES.ID;
+  
+  --SELECT * FROM TABLE (DBMS_XPLAN.DISPLAY('PLAN_TABLE', 'bill_and_details_explain_plan', 'BASIC +note ') );
+  --SELECT * FROM TABLE (DBMS_XPLAN.DISPLAY('PLAN_TABLE', 'bill_and_details_explain_plan', 'TYPICAL ') );
+  SELECT * FROM TABLE (DBMS_XPLAN.DISPLAY('PLAN_TABLE', 'bill_and_details_explain_plan', 'ALL ') );
 
+================================================================================================================
+Resultado de ejecutar el plan de ejecución
+================================================================================================================
+
+Plan hash value: 3866127902
+ 
+-------------------------------------------------------------------------------------------------------
+| Id  | Operation                           | Name            | Rows  | Bytes | Cost (%CPU)| Time     |
+-------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                    |                 |     1 |  1000 |    11  (10)| 00:00:01 |
+|   1 |  HASH UNIQUE                        |                 |     1 |  1000 |    11  (10)| 00:00:01 |
+|   2 |   NESTED LOOPS                      |                 |     2 |  2000 |    10   (0)| 00:00:01 |
+|   3 |    NESTED LOOPS                     |                 |     2 |  2000 |    10   (0)| 00:00:01 |
+|   4 |     NESTED LOOPS                    |                 |     2 |  1972 |     8   (0)| 00:00:01 |
+|   5 |      NESTED LOOPS                   |                 |     1 |   980 |     5   (0)| 00:00:01 |
+|   6 |       NESTED LOOPS                  |                 |     1 |   838 |     4   (0)| 00:00:01 |
+|   7 |        NESTED LOOPS                 |                 |     1 |   567 |     3   (0)| 00:00:01 |
+|   8 |         NESTED LOOPS                |                 |     1 |   167 |     2   (0)| 00:00:01 |
+|   9 |          TABLE ACCESS BY INDEX ROWID| INVOICES        |     1 |    12 |     1   (0)| 00:00:01 |
+|* 10 |           INDEX UNIQUE SCAN         | PK_INVOICE      |     1 |       |     0   (0)| 00:00:01 |
+|  11 |          TABLE ACCESS BY INDEX ROWID| VEHICLES        |     1 |   155 |     1   (0)| 00:00:01 |
+|* 12 |           INDEX UNIQUE SCAN         | PK_VEHICLE      |     1 |       |     0   (0)| 00:00:01 |
+|  13 |         TABLE ACCESS BY INDEX ROWID | CUSTOMERS       |     1 |   400 |     1   (0)| 00:00:01 |
+|* 14 |          INDEX UNIQUE SCAN          | PK_CUSTOMER     |     1 |       |     0   (0)| 00:00:01 |
+|  15 |        TABLE ACCESS BY INDEX ROWID  | SELLERS         |     1 |   271 |     1   (0)| 00:00:01 |
+|* 16 |         INDEX UNIQUE SCAN           | PK_SELLER       |     1 |       |     0   (0)| 00:00:01 |
+|  17 |       TABLE ACCESS BY INDEX ROWID   | MANUFACTURERS   |     1 |   142 |     1   (0)| 00:00:01 |
+|* 18 |        INDEX UNIQUE SCAN            | PK_MANUFACTURE  |     1 |       |     0   (0)| 00:00:01 |
+|* 19 |      TABLE ACCESS FULL              | INVOICES_DETAIL |     2 |    12 |     3   (0)| 00:00:01 |
+|* 20 |     INDEX UNIQUE SCAN               | PK_ITEM         |     1 |       |     0   (0)| 00:00:01 |
+|  21 |    TABLE ACCESS BY INDEX ROWID      | ITEMS           |     1 |    14 |     1   (0)| 00:00:01 |
+-------------------------------------------------------------------------------------------------------
+ 
+Query Block Name / Object Alias (identified by operation id):
+-------------------------------------------------------------
+ 
+   1 - SEL$B6DBC5A1
+   9 - SEL$B6DBC5A1 / INVOICES@SEL$1
+  10 - SEL$B6DBC5A1 / INVOICES@SEL$1
+  11 - SEL$B6DBC5A1 / VEHICLES@SEL$3
+  12 - SEL$B6DBC5A1 / VEHICLES@SEL$3
+  13 - SEL$B6DBC5A1 / CUSTOMERS@SEL$2
+  14 - SEL$B6DBC5A1 / CUSTOMERS@SEL$2
+  15 - SEL$B6DBC5A1 / SELLERS@SEL$1
+  16 - SEL$B6DBC5A1 / SELLERS@SEL$1
+  17 - SEL$B6DBC5A1 / MANUFACTURERS@SEL$4
+  18 - SEL$B6DBC5A1 / MANUFACTURERS@SEL$4
+  19 - SEL$B6DBC5A1 / INVOICES_DETAIL@SEL$5
+  20 - SEL$B6DBC5A1 / ITEMS@SEL$6
+  21 - SEL$B6DBC5A1 / ITEMS@SEL$6
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+  10 - access("INVOICES"."ID"=5)
+  12 - access("INVOICES"."VEHICLE_ID"="VEHICLES"."ID")
+  14 - access("INVOICES"."CUSTOMER_ID"="CUSTOMERS"."ID")
+  16 - access("INVOICES"."SELLER_ID"="SELLERS"."ID")
+  18 - access("VEHICLES"."MANUFACTURER_ID"="MANUFACTURERS"."ID")
+  19 - filter("INVOICES_DETAIL"."INVOICE_ID"=5)
+  20 - access("INVOICES_DETAIL"."ITEM_ID"="ITEMS"."ID")
+ 
+Column Projection Information (identified by operation id):
+-----------------------------------------------------------
+ 
+   1 - (#keys=13) "INVOICES"."ID"[NUMBER,22], "SELLERS"."ID"[NUMBER,22], 
+       "SELLERS"."FIRST_NAME"[VARCHAR2,255], "SELLERS"."LAST_NAME"[VARCHAR2,255], 
+       "CUSTOMERS"."ID"[NUMBER,22], "CUSTOMERS"."IDENTIFICATION"[VARCHAR2,255], 
+       "CUSTOMERS"."FIRST_NAME"[VARCHAR2,255], "CUSTOMERS"."LAST_NAME"[VARCHAR2,255], 
+       "VEHICLES"."ID"[NUMBER,22], "VEHICLES"."NAME"[VARCHAR2,255], 
+       "MANUFACTURERS"."NAME_MANUFACTURER"[VARCHAR2,255], "ITEMS"."ID"[NUMBER,22], 
+       "ITEMS"."DESCRIPTION"[VARCHAR2,255]
+   2 - (#keys=0) "INVOICES"."ID"[NUMBER,22], "VEHICLES"."ID"[NUMBER,22], 
+       "VEHICLES"."NAME"[VARCHAR2,255], "CUSTOMERS"."ID"[NUMBER,22], 
+       "CUSTOMERS"."IDENTIFICATION"[VARCHAR2,255], "CUSTOMERS"."FIRST_NAME"[VARCHAR2,255], 
+       "CUSTOMERS"."LAST_NAME"[VARCHAR2,255], "SELLERS"."ID"[NUMBER,22], 
+       "SELLERS"."FIRST_NAME"[VARCHAR2,255], "SELLERS"."LAST_NAME"[VARCHAR2,255], 
+       "MANUFACTURERS"."NAME_MANUFACTURER"[VARCHAR2,255], "INVOICES_DETAIL"."ITEM_ID"[NUMBER,22], 
+       "ITEMS"."ID"[NUMBER,22], "ITEMS"."DESCRIPTION"[VARCHAR2,255]
+   3 - (#keys=0) "INVOICES"."ID"[NUMBER,22], "VEHICLES"."ID"[NUMBER,22], 
+       "VEHICLES"."NAME"[VARCHAR2,255], "CUSTOMERS"."ID"[NUMBER,22], 
+       "CUSTOMERS"."IDENTIFICATION"[VARCHAR2,255], "CUSTOMERS"."FIRST_NAME"[VARCHAR2,255], 
+       "CUSTOMERS"."LAST_NAME"[VARCHAR2,255], "SELLERS"."ID"[NUMBER,22], 
+       "SELLERS"."FIRST_NAME"[VARCHAR2,255], "SELLERS"."LAST_NAME"[VARCHAR2,255], 
+       "MANUFACTURERS"."NAME_MANUFACTURER"[VARCHAR2,255], "INVOICES_DETAIL"."ITEM_ID"[NUMBER,22], 
+       "ITEMS".ROWID[ROWID,10], "ITEMS"."ID"[NUMBER,22]
+   4 - (#keys=0) "INVOICES"."ID"[NUMBER,22], "VEHICLES"."ID"[NUMBER,22], 
+       "VEHICLES"."NAME"[VARCHAR2,255], "CUSTOMERS"."ID"[NUMBER,22], 
+       "CUSTOMERS"."IDENTIFICATION"[VARCHAR2,255], "CUSTOMERS"."FIRST_NAME"[VARCHAR2,255], 
+       "CUSTOMERS"."LAST_NAME"[VARCHAR2,255], "SELLERS"."ID"[NUMBER,22], 
+       "SELLERS"."FIRST_NAME"[VARCHAR2,255], "SELLERS"."LAST_NAME"[VARCHAR2,255], 
+       "MANUFACTURERS"."NAME_MANUFACTURER"[VARCHAR2,255], "INVOICES_DETAIL"."ITEM_ID"[NUMBER,22]
+   5 - (#keys=0) "INVOICES"."ID"[NUMBER,22], "VEHICLES"."ID"[NUMBER,22], 
+       "VEHICLES"."NAME"[VARCHAR2,255], "CUSTOMERS"."ID"[NUMBER,22], 
+       "CUSTOMERS"."IDENTIFICATION"[VARCHAR2,255], "CUSTOMERS"."FIRST_NAME"[VARCHAR2,255], 
+       "CUSTOMERS"."LAST_NAME"[VARCHAR2,255], "SELLERS"."ID"[NUMBER,22], 
+       "SELLERS"."FIRST_NAME"[VARCHAR2,255], "SELLERS"."LAST_NAME"[VARCHAR2,255], 
+       "MANUFACTURERS"."NAME_MANUFACTURER"[VARCHAR2,255]
+   6 - (#keys=0) "INVOICES"."ID"[NUMBER,22], "VEHICLES"."ID"[NUMBER,22], 
+       "VEHICLES"."NAME"[VARCHAR2,255], "VEHICLES"."MANUFACTURER_ID"[NUMBER,22], 
+       "CUSTOMERS"."ID"[NUMBER,22], "CUSTOMERS"."IDENTIFICATION"[VARCHAR2,255], 
+       "CUSTOMERS"."FIRST_NAME"[VARCHAR2,255], "CUSTOMERS"."LAST_NAME"[VARCHAR2,255], 
+       "SELLERS"."ID"[NUMBER,22], "SELLERS"."FIRST_NAME"[VARCHAR2,255], 
+       "SELLERS"."LAST_NAME"[VARCHAR2,255]
+   7 - (#keys=0) "INVOICES"."ID"[NUMBER,22], "INVOICES"."SELLER_ID"[NUMBER,22], 
+       "VEHICLES"."ID"[NUMBER,22], "VEHICLES"."NAME"[VARCHAR2,255], 
+       "VEHICLES"."MANUFACTURER_ID"[NUMBER,22], "CUSTOMERS"."ID"[NUMBER,22], 
+       "CUSTOMERS"."IDENTIFICATION"[VARCHAR2,255], "CUSTOMERS"."FIRST_NAME"[VARCHAR2,255], 
+       "CUSTOMERS"."LAST_NAME"[VARCHAR2,255]
+   8 - (#keys=0) "INVOICES"."ID"[NUMBER,22], "INVOICES"."CUSTOMER_ID"[NUMBER,22], 
+       "INVOICES"."SELLER_ID"[NUMBER,22], "VEHICLES"."ID"[NUMBER,22], 
+       "VEHICLES"."NAME"[VARCHAR2,255], "VEHICLES"."MANUFACTURER_ID"[NUMBER,22]
+   9 - "INVOICES"."ID"[NUMBER,22], "INVOICES"."CUSTOMER_ID"[NUMBER,22], 
+       "INVOICES"."VEHICLE_ID"[NUMBER,22], "INVOICES"."SELLER_ID"[NUMBER,22]
+  10 - "INVOICES".ROWID[ROWID,10], "INVOICES"."ID"[NUMBER,22]
+  11 - "VEHICLES"."ID"[NUMBER,22], "VEHICLES"."NAME"[VARCHAR2,255], 
+       "VEHICLES"."MANUFACTURER_ID"[NUMBER,22]
+  12 - "VEHICLES".ROWID[ROWID,10], "VEHICLES"."ID"[NUMBER,22]
+  13 - "CUSTOMERS"."ID"[NUMBER,22], "CUSTOMERS"."IDENTIFICATION"[VARCHAR2,255], 
+       "CUSTOMERS"."FIRST_NAME"[VARCHAR2,255], "CUSTOMERS"."LAST_NAME"[VARCHAR2,255]
+  14 - "CUSTOMERS".ROWID[ROWID,10], "CUSTOMERS"."ID"[NUMBER,22]
+  15 - "SELLERS"."ID"[NUMBER,22], "SELLERS"."FIRST_NAME"[VARCHAR2,255], 
+       "SELLERS"."LAST_NAME"[VARCHAR2,255]
+  16 - "SELLERS".ROWID[ROWID,10], "SELLERS"."ID"[NUMBER,22]
+  17 - "MANUFACTURERS"."NAME_MANUFACTURER"[VARCHAR2,255]
+  18 - "MANUFACTURERS".ROWID[ROWID,10]
+  19 - "INVOICES_DETAIL"."ITEM_ID"[NUMBER,22]
+  20 - "ITEMS".ROWID[ROWID,10], "ITEMS"."ID"[NUMBER,22]
+  21 - "ITEMS"."DESCRIPTION"[VARCHAR2,255]
+ 
+Note
+-----
+   - this is an adaptive plan

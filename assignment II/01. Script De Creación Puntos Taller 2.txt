@@ -135,3 +135,47 @@ END;
 
 EXEC reorder_units();
 
+
+
+--Punto 6.
+--Create a view with the following columns (bill_id, sales_person_id, name_of_salesperson, client_id,
+--name_of_client, vehicle_id, brand_of_vehicle, manufacturer_of_vehicle, accesory_id,
+--name_of_accesory). The idea is you can add outside the view 'where bill_id = xx' and displays the
+--information associated to a bill including its details (accessories). (0.5)
+
+CREATE OR REPLACE VIEW bill_and_details AS
+  SELECT DISTINCT 
+        INVOICES.ID as "Invoice Id",  
+  
+         SELLERS.ID as "Seller Id", 
+         SELLERS.FIRST_NAME as "Seller first name", 
+         SELLERS.LAST_NAME as "Seller last name",
+         
+         CUSTOMERS.ID as "customer id", 
+         CUSTOMERS.IDENTIFICATION as "Customer identification", 
+         CUSTOMERS.FIRST_NAME as "Customer first name", 
+         CUSTOMERS.LAST_NAME as "Customer last name",
+         
+         VEHICLES.ID as "Vehicle id",
+         VEHICLES.NAME as "Vehicle name",
+         
+         MANUFACTURERS.NAME_MANUFACTURER as "Vehicle manufacturer",
+         
+         ITEMS.ID as "Accesory id", 
+         ITEMS.DESCRIPTION as "Accesori name" 
+         
+  FROM INVOICES 
+  INNER JOIN SELLERS ON INVOICES.SELLER_ID = SELLERS.ID 
+  INNER JOIN CUSTOMERS ON INVOICES.CUSTOMER_ID = CUSTOMERS.ID 
+  INNER JOIN VEHICLES ON INVOICES.VEHICLE_ID = VEHICLES.ID 
+  --INNER JOIN EXCHANGED_VEHICLES ON EXCHANGED_VEHICLES.INVOICE_ID = INVOICES.ID 
+  INNER JOIN MANUFACTURERS ON VEHICLES.MANUFACTURER_ID = MANUFACTURERS.ID 
+  INNER JOIN INVOICES_DETAIL ON INVOICES_DETAIL.INVOICE_ID = INVOICES.ID 
+  INNER JOIN ITEMS ON ITEM_ID = ITEMS.ID 
+  WHERE INVOICES.ID = 5 
+  ORDER BY INVOICES.ID;
+  
+  select * from bill_and_details;
+
+
+
